@@ -1,0 +1,232 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+-- -----------------------------------------------------
+-- Schema parkingdom1
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema parkingdom1
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `parkingdom1` DEFAULT CHARACTER SET latin1 ;
+USE `mydb` ;
+USE `parkingdom1` ;
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`vehiculos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`vehiculos` (
+  `idvehiculos` INT(11) NOT NULL AUTO_INCREMENT,
+  `placa` VARCHAR(10) NOT NULL,
+  `modelo` VARCHAR(20) NOT NULL,
+  `color` VARCHAR(20) NOT NULL,
+  `marca` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`idvehiculos`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`espacio`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`espacio` (
+  `idespacio` INT(11) NOT NULL,
+  `nombre_espacio` VARCHAR(20) NULL DEFAULT NULL,
+  `vehiculos_idvehiculos` INT(11) NOT NULL,
+  PRIMARY KEY (`idespacio`, `vehiculos_idvehiculos`),
+  INDEX `fk_espacio_vehiculos_idx` (`vehiculos_idvehiculos` ASC),
+  CONSTRAINT `fk_espacio_vehiculos`
+    FOREIGN KEY (`vehiculos_idvehiculos`)
+    REFERENCES `parkingdom1`.`vehiculos` (`idvehiculos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`mensualidad`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`mensualidad` (
+  `idmensualidad` INT(11) NOT NULL AUTO_INCREMENT,
+  `fecha_inicio` DATETIME NULL DEFAULT NULL,
+  `fecha_vencimiento` DATETIME NULL DEFAULT NULL,
+  `descripcion` TINYTEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`idmensualidad`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`operario`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`operario` (
+  `idoperario` INT(11) NOT NULL,
+  `nombre` VARCHAR(45) NULL DEFAULT NULL,
+  `apellidos` VARCHAR(45) NULL DEFAULT NULL,
+  `usuario` VARCHAR(45) NULL DEFAULT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idoperario`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`persona`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`persona` (
+  `idpersona` INT(11) NOT NULL AUTO_INCREMENT,
+  `cedula` INT(11) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `apellidos` VARCHAR(45) NOT NULL,
+  `telefono` INT(11) NOT NULL,
+  `correo_electronico` VARCHAR(45) NULL DEFAULT NULL,
+  `posee_discapacidad` VARCHAR(45) NULL DEFAULT NULL,
+  `observaciones` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idpersona`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`tarifa`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`tarifa` (
+  `idtarifa` INT(11) NOT NULL AUTO_INCREMENT,
+  `valor_tarifa` DOUBLE NULL DEFAULT NULL,
+  `descripcion` VARCHAR(50) NULL DEFAULT NULL,
+  PRIMARY KEY (`idtarifa`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`transaccion_normal`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`transaccion_normal` (
+  `id_transaccion` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo_vehiculo` VARCHAR(20) NOT NULL,
+  `placa` VARCHAR(10) NOT NULL,
+  `hora_entrada` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `hora_salida` DATE NULL DEFAULT NULL,
+  `ubicacion` INT(11) NULL DEFAULT NULL,
+  `vehiculos_idvehiculos` INT(11) NOT NULL,
+  `operario_idoperario` INT(11) NOT NULL,
+  `espacio_idespacio` INT(11) NOT NULL,
+  `espacio_vehiculos_idvehiculos` INT(11) NOT NULL,
+  PRIMARY KEY (`id_transaccion`, `vehiculos_idvehiculos`, `operario_idoperario`, `espacio_idespacio`, `espacio_vehiculos_idvehiculos`),
+  INDEX `fk_transaccion_normal_vehiculos1_idx` (`vehiculos_idvehiculos` ASC),
+  INDEX `fk_transaccion_normal_operario1_idx` (`operario_idoperario` ASC),
+  INDEX `fk_transaccion_normal_espacio1_idx` (`espacio_idespacio` ASC, `espacio_vehiculos_idvehiculos` ASC),
+  CONSTRAINT `fk_transaccion_normal_vehiculos1`
+    FOREIGN KEY (`vehiculos_idvehiculos`)
+    REFERENCES `parkingdom1`.`vehiculos` (`idvehiculos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_transaccion_normal_operario1`
+    FOREIGN KEY (`operario_idoperario`)
+    REFERENCES `parkingdom1`.`operario` (`idoperario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_transaccion_normal_espacio1`
+    FOREIGN KEY (`espacio_idespacio` , `espacio_vehiculos_idvehiculos`)
+    REFERENCES `parkingdom1`.`espacio` (`idespacio` , `vehiculos_idvehiculos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 11
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`transaccion_temporal`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`transaccion_temporal` (
+  `id_transaccion` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo_vehiculo` VARCHAR(20) NOT NULL,
+  `placa` VARCHAR(20) NOT NULL,
+  `hora_entrada` DATETIME NOT NULL,
+  `hora_salida` DATETIME NULL DEFAULT NULL,
+  `tiempo_parqueo` VARCHAR(30) NULL DEFAULT NULL,
+  `valor_tiempo` DOUBLE NULL DEFAULT NULL,
+  `operario_idoperario` INT(11) NOT NULL,
+  `tarifa_idtarifa` INT(11) NOT NULL,
+  PRIMARY KEY (`id_transaccion`, `operario_idoperario`, `tarifa_idtarifa`),
+  INDEX `fk_transaccion_temporal_operario1_idx` (`operario_idoperario` ASC),
+  INDEX `fk_transaccion_temporal_tarifa1_idx` (`tarifa_idtarifa` ASC),
+  CONSTRAINT `fk_transaccion_temporal_operario1`
+    FOREIGN KEY (`operario_idoperario`)
+    REFERENCES `parkingdom1`.`operario` (`idoperario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_transaccion_temporal_tarifa1`
+    FOREIGN KEY (`tarifa_idtarifa`)
+    REFERENCES `parkingdom1`.`tarifa` (`idtarifa`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 13
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`vehiculo_persona`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`vehiculo_persona` (
+  `detalles` VARCHAR(105) NULL DEFAULT NULL,
+  `vehiculos_idvehiculos` INT(11) NOT NULL,
+  `persona_idpersona` INT(11) NOT NULL,
+  PRIMARY KEY (`vehiculos_idvehiculos`, `persona_idpersona`),
+  INDEX `fk_vehiculo_persona_persona1_idx` (`persona_idpersona` ASC),
+  CONSTRAINT `fk_vehiculo_persona_vehiculos1`
+    FOREIGN KEY (`vehiculos_idvehiculos`)
+    REFERENCES `parkingdom1`.`vehiculos` (`idvehiculos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_vehiculo_persona_persona1`
+    FOREIGN KEY (`persona_idpersona`)
+    REFERENCES `parkingdom1`.`persona` (`idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `parkingdom1`.`vehiculos_mensualidad`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `parkingdom1`.`vehiculos_mensualidad` (
+  `estado` VARCHAR(10) NOT NULL,
+  `mensualidad_idmensualidad` INT(11) NOT NULL,
+  `vehiculos_idvehiculos` INT(11) NOT NULL,
+  PRIMARY KEY (`mensualidad_idmensualidad`, `vehiculos_idvehiculos`),
+  INDEX `fk_vehiculos_mensualidad_vehiculos1_idx` (`vehiculos_idvehiculos` ASC),
+  CONSTRAINT `fk_vehiculos_mensualidad_mensualidad1`
+    FOREIGN KEY (`mensualidad_idmensualidad`)
+    REFERENCES `parkingdom1`.`mensualidad` (`idmensualidad`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_vehiculos_mensualidad_vehiculos1`
+    FOREIGN KEY (`vehiculos_idvehiculos`)
+    REFERENCES `parkingdom1`.`vehiculos` (`idvehiculos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
