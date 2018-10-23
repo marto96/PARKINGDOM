@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" >
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Pagina Principal</title>
+    <link rel="shorcut icon" type="image/x-icon" href="imagenes/favicon.ico">   
+    <!--<link rel="stylesheet" href="css/estilos.css" type="text/css">-->
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet"> 
+    <script src="js/jquery.min.js" type="text/javascript"></script>
+    <script src="js/funciones.js" type="text/javascript"></script>
+    <script src="js/JsBarcode.all.min.js" type="text/javascript"></script>
+</head>
+ <body>
+ <style>
+     * {
+  font-size: 12px;
+  font-family: 'Times New Roman';
+}
+ 
+td,
+th,
+tr,
+table {
+  border-top: 1px solid black;
+  border-collapse: collapse;
+}
+ 
+td.producto,
+th.producto {
+  width: 33.3%;
+  max-width: 33.3%;
+}
+ 
+td.cantidad,
+th.cantidad {
+  width: 33.3%;
+  max-width: 33.3%;
+  word-break: break-all;
+}
+ 
+td.precio,
+th.precio {
+  width: 33.3%;
+  max-width: 33.3%;
+  word-break: break-all;
+}
+ 
+.centrado {
+  text-align: center;
+  align-content: center;
+}
+ 
+.ticket {
+  width: 250px;
+  max-width: 250px;
+}
+ 
+img {
+  max-width: inherit;
+  width: inherit;
+}
+     @media print{
+  .oculto-impresion, .oculto-impresion *{
+    display: none !important;
+  }
+}
+     </style>
+  <svg id="barcode"></svg>
+      
+      <script>
+       
+        JsBarcode("#barcode", "0001", {
+ 
+  width: 4,
+  height: 40,
+});
+          
+          function imprimir() {
+  window.print();
+}
+ 
+        </script>
+<!--Tabs -->     
+       <div class="ticket">
+    <img src="imagenes/sunroof%20(2).jpg" alt="Logotipo">
+    <p class="centrado">TICKET DE ENTRADA
+      <br>Bogota, Colombia
+      <br>17/10/2017 02:22 a.m.</p>
+    <table>
+      <thead>
+        <tr>
+          <th class="cantidad">PLACA</th>
+          <th class="producto">HORA DE ENTRADA</th>
+          <th class="precio">$$</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cantidad">EPR87D</td>
+          <td class="producto">22/10/2018-20:39PM</td>
+          <td class="precio">$12.000</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="centrado">¡GRACIAS POR SU VISITA!
+      <br>Parkingdom.com</p>
+  </div>
+  <button class="oculto-impresion" onclick="imprimir()">Imprimir</button>
+</body>
+<!--  Footer -->
+</html>
